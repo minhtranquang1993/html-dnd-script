@@ -1,0 +1,13 @@
+# Credentials — NEVER commit real tokens
+credentials/github_token.txt
+credentials/token_config.json
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# OS
+.DS_Store
+Thumbs.db
