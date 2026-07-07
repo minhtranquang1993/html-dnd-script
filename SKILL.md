@@ -88,9 +88,12 @@ Sau khi xác định loại, đọc file reference tương ứng và làm theo w
 
 **Xác định keyword chính:** đọc nội dung, tự rút ra từ khóa SEO chính (chủ đề trọng tâm của bài — thường là cụm từ xuất hiện ở tiêu đề/đoạn mở đầu hoặc lặp lại nhiều nhất mang tính chủ đề). Dùng keyword này cho toàn bộ các bước sau (internal links, SEO title/slug...). Nếu user có kèm gợi ý keyword rõ ràng trong message → ưu tiên gợi ý đó hơn là tự suy luận.
 
+**Riêng type = event:** KHÔNG rút gọn thành từ khóa ngắn như trên. Từ khóa chính = tên đầy đủ của event/chương trình lấy từ content (thường ở dạng "WORKSHOP: {TÊN CHƯƠNG TRÌNH}" hoặc "HỘI THẢO: {TÊN CHƯƠNG TRÌNH}" — bỏ phần tagline/phụ đề phía sau dấu `|` nếu có, vì đó chỉ là mô tả thêm chứ không phải tên chương trình). Ví dụ content có `"WORKSHOP: SMILE PRO - XU HƯỚNG PHẪU THUẬT KHÚC XẠ HIỆN ĐẠI | NHỮNG ĐIỀU CẦN BIẾT TRƯỚC KHI MỔ CẬN"` → từ khóa chính = `"Workshop SMILE Pro - Xu hướng phẫu thuật khúc xạ hiện đại"`, dùng nguyên cụm này (không rút gọn thêm) để tạo slug ở bước dưới.
+
 **Tạo Slug (ngay sau khi có keyword):** từ keyword chính vừa xác định, tạo slug dùng cho URL bài viết thật:
 - Lowercase, bỏ dấu tiếng Việt, thay khoảng trắng và ký tự đặc biệt bằng `-`
-- Ví dụ: `"phẫu thuật mắt lasik"` → `"phau-thuat-mat-lasik"`
+- Ví dụ (post/doctor): `"phẫu thuật mắt lasik"` → `"phau-thuat-mat-lasik"`
+- Ví dụ (event): `"Workshop SMILE Pro - Xu hướng phẫu thuật khúc xạ hiện đại"` → `"workshop-smile-pro-xu-huong-phau-thuat-khuc-xa-hien-dai"`
 
 Slug này chỉ tính **một lần duy nhất** ở đây, dùng lại cho: block "Tóm tắt bài viết bằng AI" (cần URL bài viết thật `https://matquoctednd.vn/{slug}/` sớm hơn BƯỚC 5) và bảng Output Format ở BƯỚC 5. KHÔNG tính lại slug ở BƯỚC 5.
 
