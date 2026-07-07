@@ -1,35 +1,18 @@
 ---
 name: dnd-html
-description: >
-  Format bài viết thành HTML chuẩn SEO cho website matquoctednd.vn.
-  Trigger khi user gọi /dnd-html [post|event|doctor] kèm nội dung paste
-  trực tiếp hoặc Google Docs URL (không cần khai báo keyword/link). Tự
-  suy ra từ khóa SEO chính từ nội dung, format HTML có internal links
-  hardcoded, sinh schema.org JSON-LD phù hợp theo loại bài
-  (post/event/doctor), tạo LSI image keywords cho SEO on-page.
-  Dùng cho: chuẩn bị bài đăng CMS, SEO content DND, format HTML bài viết mắt,
-  bài event/hội thảo, trang thông tin bác sĩ.
-homepage: skills/dnd-html
-metadata:
-  version: "2.0.0"
-  author: openclaw
-  category: seo
-  risk: low
-  scripts: true
-  status: active
-  triggers:
-    - "/dnd-html"
-    - "/dnd-html post"
-    - "/dnd-html event"
-    - "/dnd-html doctor"
-    - "format html dnd"
-    - "chuẩn bị bài html dnd"
-    - "format bài viết matquoctednd"
+description: >-
+  Format bài viết thành HTML chuẩn SEO cho website matquoctednd.vn (Bệnh viện Mắt Quốc tế DND Sài Gòn).
+  Trigger khi user gọi /dnd-html [post|event|doctor] kèm nội dung paste trực tiếp hoặc Google Docs URL
+  (không cần khai báo keyword/link). Tự suy ra từ khóa SEO chính từ nội dung, format HTML có internal
+  links hardcoded, sinh schema.org JSON-LD phù hợp theo loại bài (post/event/doctor), block bác sĩ
+  tham vấn, tạo SEO title/description/slug + LSI image keywords, rồi hiển thị HTML output trực tiếp
+  trên màn hình.
+  Trigger: "/dnd-html", "format html dnd", "chuẩn bị bài html dnd", "format bài viết matquoctednd".
 ---
 
 # Skill: dnd-html
 
-Format bài viết thành HTML chuẩn SEO cho website **Mắt Quốc Tế Đà Nẵng** (matquoctednd.vn). Router chọn 1 trong 3 loại bài, mỗi loại có workflow + schema.org riêng.
+Format bài viết thành HTML chuẩn SEO cho website **Bệnh viện Mắt Quốc tế DND Sài Gòn** (matquoctednd.vn). Router chọn 1 trong 3 loại bài, mỗi loại có workflow + schema.org riêng.
 
 ## Usage
 
@@ -95,7 +78,7 @@ Sau khi xác định loại, đọc file reference tương ứng và làm theo w
 
 **Nếu nội dung sau flag là 1 Google Docs URL (và không có gì khác):**
 1. Extract document ID từ URL (phần giữa `/d/` và `/edit` hoặc `/view`)
-2. Gọi tool `mcp__google-workspace__docs_get_document` với:
+2. Gọi tool Google Workspace Docs (`mcpGoogleWorkspaceDocsGetDocument`) với:
    - `document_id`: ID vừa extract
    - `response_format`: `"markdown"`
 3. Dùng content trả về làm nguồn
@@ -105,39 +88,19 @@ Sau khi xác định loại, đọc file reference tương ứng và làm theo w
 
 **Xác định keyword chính:** đọc nội dung, tự rút ra từ khóa SEO chính (chủ đề trọng tâm của bài — thường là cụm từ xuất hiện ở tiêu đề/đoạn mở đầu hoặc lặp lại nhiều nhất mang tính chủ đề). Dùng keyword này cho toàn bộ các bước sau (internal links, SEO title/slug...). Nếu user có kèm gợi ý keyword rõ ràng trong message → ưu tiên gợi ý đó hơn là tự suy luận.
 
+**Tạo Slug (ngay sau khi có keyword):** từ keyword chính vừa xác định, tạo slug dùng cho URL bài viết thật:
+- Lowercase, bỏ dấu tiếng Việt, thay khoảng trắng và ký tự đặc biệt bằng `-`
+- Ví dụ: `"phẫu thuật mắt lasik"` → `"phau-thuat-mat-lasik"`
+
+Slug này chỉ tính **một lần duy nhất** ở đây, dùng lại cho: block "Tóm tắt bài viết bằng AI" (cần URL bài viết thật `https://matquoctednd.vn/{slug}/` sớm hơn BƯỚC 5) và bảng Output Format ở BƯỚC 5. KHÔNG tính lại slug ở BƯỚC 5.
+
 Sau bước này, chuyển sang workflow riêng của từng loại (`references/{type}.md`) để format HTML + sinh schema.
 
 ---
 
-## BƯỚC 5 — Push HTML lên GitHub (chung cho cả 3 loại)
+## BƯỚC 5 — Slug cho Output Format (chung cho cả 3 loại)
 
-Sau khi có HTML hoàn chỉnh (đã bao gồm JSON-LD script tag từ workflow riêng), push lên repo `minhtranquang1993/dnd-html-content`.
-
-**Tạo slug từ keyword:**
-- Lowercase, bỏ dấu tiếng Việt, thay khoảng trắng và ký tự đặc biệt bằng `-`
-- Ví dụ: `"phẫu thuật mắt lasik"` → `"phau-thuat-mat-lasik"`
-
-**Lưu HTML vào file tạm rồi chạy script:**
-
-```bash
-python3 -c "
-html = '''<article>...HTML content + JSON-LD script tag...</article>'''
-open('/tmp/dnd_{slug}.html', 'w', encoding='utf-8').write(html)
-"
-
-python3 skills/dnd-html/scripts/push_to_github.py \
-  --slug "{keyword-slug}" \
-  --html-file /tmp/dnd_{slug}.html
-```
-
-Script trả về URL dạng:
-```
-https://github.com/minhtranquang1993/dnd-html-content/blob/main/{slug}.html
-```
-
-**Lưu URL này** để hoàn thiện thông tin trả về.
-
-> ⚠️ Nếu script báo lỗi `Bad credentials` hoặc `No valid GitHub token`: token đã hết hạn. Báo user cập nhật token tại `credentials/github_token.txt`.
+Slug đã được tính ở BƯỚC 1 (ngay sau khi xác định keyword). Dùng lại đúng slug đó để điền vào bảng Output Format — KHÔNG tính lại hoặc tạo slug mới ở đây.
 
 ---
 
@@ -150,7 +113,6 @@ https://github.com/minhtranquang1993/dnd-html-content/blob/main/{slug}.html
 📝 **Title:** {seo_title}
 💡 **Description:** {seo_description}
 🌐 **Slug:** {slug}
-🔗 **GitHub:** https://github.com/minhtranquang1993/dnd-html-content/blob/main/{slug}.html
 
 ---
 
@@ -180,15 +142,11 @@ https://github.com/minhtranquang1993/dnd-html-content/blob/main/{slug}.html
 
 ## 📄 HTML Content
 
-<details>
-<summary>Click để xem HTML content</summary>
-
 \```html
 <article>
   [NỘI DUNG HTML ĐÃ FORMAT + INTERNAL LINKS + JSON-LD]
 </article>
 \```
-</details>
 ```
 
 ---
@@ -197,6 +155,5 @@ https://github.com/minhtranquang1993/dnd-html-content/blob/main/{slug}.html
 
 - **Không tự thêm nội dung**: Tuyệt đối không viết thêm thông tin không có trong bản gốc
 - **SEO-safe**: Mỗi URL internal link chỉ 1 lần để tránh over-optimization
-- **JSON-LD**: Luôn serialize qua `json.dumps(obj, ensure_ascii=False)` khi viết ra file, không tự escape tay chuỗi JSON tiếng Việt
+- **JSON-LD**: Luôn serialize/hiển thị đúng cú pháp JSON, không tự escape tay chuỗi JSON tiếng Việt
 - **Mặc định images=3** nếu không truyền tham số
-- **GitHub token**: nếu hết hạn, báo user cập nhật `credentials/github_token.txt`
