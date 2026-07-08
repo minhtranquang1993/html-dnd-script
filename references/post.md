@@ -69,27 +69,71 @@ BS Lê Thị Thu Hà:   https://matquoctednd.vn/doctors/le-thi-thu-ha/
 
 ---
 
+## BƯỚC 3.4 — Gợi Ý Internal Link Bài Liên Quan (tùy nội dung)
+
+> ⚠️ **Nếu có flag `none-internal`** → BỎ QUA bước này.
+
+Đọc file `references/internal-links.json` (danh sách bài kiến thức suy luận từ sitemap, đã lọc bỏ tin tức/sự kiện). So khớp `keyword` chính và nội dung bài với trường `keywords`/`topics` của từng entry.
+
+**Rules:**
+- Nếu có **1-2 bài** match rõ chủ đề (cùng `topics` hoặc trùng `keywords` với nội dung) → chèn thêm 1-2 internal link tới các bài đó, theo đúng rule anchor text tự nhiên như BƯỚC 3 (không thêm câu mới chỉ để chèn link)
+- Nếu **không có bài nào match rõ** → bỏ qua bước này, không ép chèn
+- Các link này **cộng thêm** vào giới hạn 2-4 internal links của BƯỚC 3 (tổng cả 2 bước không vượt quá 4-6 internal links thông thường trong bài)
+- Mỗi URL vẫn tối đa 1 lần trong toàn bài (áp dụng chung với BƯỚC 3)
+
+---
+
 ## BƯỚC 3.5 — Thêm Block Bác Sĩ Tham Vấn (BẮT BUỘC — trừ khi `none-internal`)
 
 > ⚠️ **Nếu có flag `none-internal`** → BỎ QUA toàn bộ BƯỚC 3.5 này, chuyển thẳng sang BƯỚC 4.
 
 **Luôn luôn chèn block này vào CUỐI bài**, ngay trước thẻ đóng `</article>` (hoặc trước JSON-LD script tag nếu có — xem BƯỚC 4.5), sau đoạn kết bài.
 
-**Nội dung cố định (KHÔNG thay đổi):**
+**Chọn bác sĩ theo chủ đề nội dung (dựa vào `keyword` chính và nội dung bài):**
+
+| Chủ đề | Bác sĩ chèn vào block |
+|---|---|
+| Khúc xạ (cận, loạn thị, viễn thị...) | BS Bùi Quang Tuấn + BS Hoàng Mai Linh |
+| Phaco (đục thủy tinh thể) | BS Bùi Quang Tuấn + BS Võ Thị Hoàng Lan |
+| Lão thị | Chỉ BS Bùi Quang Tuấn |
+| Chủ đề khác (tin tức, sự kiện, bệnh lý khác...) | Chỉ BS Bùi Quang Tuấn |
+
+**Thông tin bác sĩ (KHÔNG thay đổi tên, chức danh, URL):**
+
+```
+BS Bùi Quang Tuấn:   https://matquoctednd.vn/doctors/bui-quang-tuan/
+                      "Bác sĩ nội trú Bùi Quang Tuấn – Giám Đốc Bệnh viện Mắt Quốc tế DND Sài Gòn"
+BS Hoàng Mai Linh:    https://matquoctednd.vn/doctors/hoang-mai-linh/
+                      "Bác sĩ Hoàng Mai Linh – Chuyên gia kiểm soát cận thị & khúc xạ trẻ em Bệnh viện Mắt Quốc tế DND Sài Gòn"
+BS Võ Thị Hoàng Lan:  https://matquoctednd.vn/doctors/vo-thi-hoang-lan/
+                      "PGS.TS.BS Võ Thị Hoàng Lan – Chuyên gia bệnh lý võng mạc & nhãn khoa nội khoa Bệnh viện Mắt Quốc tế DND Sài Gòn"
+```
+
+**Template — trường hợp 2 bác sĩ (khúc xạ hoặc phaco):**
 
 ```html
 <p>Bài viết có sự tham vấn của 2 bác sĩ chuyên khoa mắt:</p>
 <ol>
+  <li><a href="{URL bác sĩ 1}">{Chức danh + Tên bác sĩ 1} – {mô tả ngắn}</a></li>
+  <li><a href="{URL bác sĩ 2}">{Chức danh + Tên bác sĩ 2} – {mô tả ngắn}</a></li>
+</ol>
+```
+
+**Template — trường hợp chỉ 1 bác sĩ (lão thị hoặc chủ đề khác):**
+
+```html
+<p>Bài viết có sự tham vấn của bác sĩ chuyên khoa mắt:</p>
+<ol>
   <li><a href="https://matquoctednd.vn/doctors/bui-quang-tuan/">Bác sĩ nội trú Bùi Quang Tuấn – Giám Đốc Bệnh viện Mắt Quốc tế DND Sài Gòn</a></li>
-  <li><a href="https://matquoctednd.vn/doctors/le-thi-thu-ha/">Thạc sĩ Bác sĩ Lê Thị Thu Hà – Trưởng khoa khúc xạ Bệnh viện Mắt Quốc tế DND Sài Gòn</a></li>
 </ol>
 ```
 
 **Rules:**
 - ✅ LUÔN chèn block này vào cuối mỗi bài — trừ khi có flag `none-internal`
 - ✅ Đặt SAU đoạn văn kết bài (thường là đoạn có hotline)
+- ✅ Xác định chủ đề dựa vào `keyword` chính đã xác định ở BƯỚC 1 và nội dung tổng thể bài — nếu bài đề cập cả khúc xạ và phaco, ưu tiên chủ đề chiếm trọng tâm chính của bài
 - ❌ KHÔNG thay đổi tên bác sĩ, chức danh, hay URL
-- ❌ KHÔNG tính 2 link bác sĩ này vào giới hạn 2-4 internal links của BƯỚC 3
+- ❌ KHÔNG tính các link bác sĩ này vào giới hạn 2-4 internal links của BƯỚC 3
 
 ---
 
