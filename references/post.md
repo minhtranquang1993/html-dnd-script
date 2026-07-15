@@ -28,6 +28,8 @@
 - Danh sách có thứ tự / các bước → `<ol>` + `<li>`
 - Từ/cụm từ quan trọng → `<strong>` (tối đa 1-2 lần/section, không lạm dụng)
 
+**Nhúng video YouTube:** nếu content có link YouTube đứng riêng 1 dòng/đoạn → thực hiện mục **"Common Procedure — Nhúng video YouTube"** ở SKILL.md (bung thành `<figure>` iframe tại đúng vị trí). Link YouTube nằm trong câu văn → giữ external link (xem BƯỚC 3 mục 5).
+
 ---
 
 ## BƯỚC 3 — Chèn Internal Branding Links
@@ -62,9 +64,10 @@ BS Bùi Quang Tuấn:  https://matquoctednd.vn/doctors/bui-quang-tuan/
 4. **Trang chủ** — chèn khi có cụm từ nhắc đến "Mắt Quốc tế DND", "DND Sài Gòn", tên phòng khám, hoặc "chúng tôi"
 5. **Format link theo loại:**
    - **Internal link** (domain `matquoctednd.vn`): `<a href="URL">anchor text</a>`
-   - **External link** (domain khác, ví dụ: Google Maps, Google Forms, YouTube...): `<a href="URL" rel="nofollow" target="_blank">anchor text</a>`
+   - **External link** (domain khác, ví dụ: Google Maps, Google Forms...): `<a href="URL" rel="nofollow" target="_blank">anchor text</a>`
+   - **Ngoại lệ YouTube:** link YouTube **đứng riêng 1 dòng/đoạn** KHÔNG format thành `<a>` — bung thành iframe embed theo "Common Procedure — Nhúng video YouTube" ở SKILL.md. Chỉ link YouTube **nằm trong câu văn** (anchor) mới giữ external `<a rel="nofollow" target="_blank">` như trên.
 6. KHÔNG chèn link vào heading (`<h2>`, `<h3>`, `<h4>`)
-7. **Áp dụng external rule cho toàn bộ bài** — kể cả các link có sẵn trong content gốc (maps.google, forms.gle, v.v.) cũng phải gắn `rel="nofollow" target="_blank"`
+7. **Áp dụng external rule cho toàn bộ bài** — kể cả các link có sẵn trong content gốc (maps.google, forms.gle, v.v.) cũng phải gắn `rel="nofollow" target="_blank"`. Ngoại lệ: URL YouTube đứng riêng đã bung iframe ở BƯỚC 2 (không còn là thẻ `<a>`)
 
 ---
 

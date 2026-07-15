@@ -46,6 +46,8 @@ Chỉ đưa vào các `<li>` có dữ liệu thực tế — field nào không c
 <p><strong>Đăng ký tham dự:</strong> <a href="{link đăng ký}" rel="nofollow" target="_blank">{anchor text tự nhiên, ví dụ "Đăng ký ngay tại đây"}</a></p>
 ```
 
+**Nhúng video YouTube:** nếu content có link YouTube đứng riêng 1 dòng/đoạn → thực hiện mục **"Common Procedure — Nhúng video YouTube"** ở SKILL.md (bung thành `<figure>` iframe tại đúng vị trí). Link YouTube nằm trong câu văn → giữ external `<a rel="nofollow" target="_blank">` như thường.
+
 ---
 
 ## BƯỚC 3 — Internal Links
