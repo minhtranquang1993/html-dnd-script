@@ -28,7 +28,7 @@ Không cần khai báo `keyword=` hay `link="..."` — dán nội dung (hoặc d
 | Tham số | Bắt buộc | Áp dụng | Mô tả |
 |---|---|---|---|
 | `{type}` | ❌ | tất cả | `post` / `event` / `doctor`. Không truyền hoặc không khớp → mặc định `post` |
-| `images` | ❌ | tất cả | Số lượng LSI image keywords (mặc định = 3) |
+| `images` | ❌ | tất cả | 2 chế độ: **số N** → sinh N LSI image keywords text (mặc định = 3, hành vi cũ). **đường dẫn folder** → bật xử lý ảnh thật (resize/convert/optimize) theo mục "Common Procedure — Xử lý & tối ưu ảnh folder" |
 | `none-internal` | ❌ | post | Bỏ qua internal links (BƯỚC 3) và block bác sĩ tham vấn (BƯỚC 3.5). Không áp dụng cho event/doctor (2 loại này không có block bác sĩ tham vấn) |
 | nội dung | ✅ | tất cả | Toàn bộ phần còn lại của message: text paste trực tiếp, hoặc 1 Google Docs URL |
 
@@ -72,6 +72,16 @@ Sau khi xác định loại, đọc file reference tương ứng và làm theo w
 | event | `references/event.md` |
 | doctor | `references/doctor.md` |
 
+### Parse tham số `images=`
+
+Xác định `images` là **count mode** (số N) hay **path mode** (folder ảnh thật) theo thứ tự ưu tiên (tránh nhầm folder tên toàn số như `2024`):
+
+1. Value chứa ký tự phân tách path (`/` hoặc `\`) HOẶC là một directory tồn tại trên đĩa → **path mode** (chạy mục "Common Procedure — Xử lý & tối ưu ảnh folder").
+2. Ngược lại, nếu value khớp `^\d+$` → **count mode** (N = giá trị đó).
+3. Còn lại → count mode với default (`images=3`).
+
+Khuyến nghị: khi truyền folder nên dùng đường dẫn có `/` (tuyệt đối hoặc `./relative`) để không mơ hồ. Tương thích ngược 100% với `images=N`.
+
 ---
 
 ## BƯỚC 1 — Đọc Content (chung cho cả 3 loại)
@@ -107,6 +117,32 @@ Slug đã được tính ở BƯỚC 1 (ngay sau khi xác định keyword). Dùn
 
 ---
 
+## Common Procedure — Xử lý & tối ưu ảnh folder (khi images là path)
+
+Mục này CHỈ chạy khi tham số `images` là **path** (xem "Parse tham số `images=`" ở BƯỚC 0). Nếu `images` là số → BỎ QUA toàn bộ mục này. Các reference (post/event/doctor) trỏ tới mục này bằng TÊN, không chỉ bằng số.
+
+1. **Chỉ chạy khi path.** Số → bỏ qua, giữ hành vi LSI keyword cũ.
+2. **Đọc folder, liệt kê ảnh nguồn** — sort theo alphabet ASCII bằng `sorted()`. Số ảnh = N. LSI keyword ở BƯỚC 4 sinh đúng N item, map 1-1 theo thứ tự alphabet.
+3. **Hỏi user:** "Width bao nhiêu px? (mặc định 1200)". User không nêu → dùng 1200.
+4. **Ghi manifest JSON tạm** `C:\tmp\dnd-optimize-manifest.json` (tạo `C:\tmp` nếu chưa có). Manifest là JSON array, mỗi item:
+
+   ```json
+   { "source_filename": "IMG_0012.PNG", "alt_text_slug": "rang-su-tham-my", "image_description": "Răng sứ thẩm mỹ tại phòng khám" }
+   ```
+
+   `source_filename` phải là tên file ĐÚNG như trên đĩa (không đoán lại theo slug).
+
+   > **Metadata nhúng vào ảnh:** script tự ghi `image_description` vào cả EXIF Description lẫn field **Tags** (keyword, UTF-16 nên hiển thị đúng tiếng Việt trong Windows Properties), và field **Authors** = "Bệnh viện Mắt Quốc tế DND Sài Gòn" cho mọi ảnh. Metadata được ghi LẠI sau khi TinyPNG nén (TinyPNG strip metadata) nên luôn có mặt trong ảnh cuối — không cần khai báo gì thêm trong manifest.
+5. **Gọi script** (quote mọi path):
+
+   ```
+   python "<SKILL_DIR>/scripts/optimize_images.py" --folder "<path folder>" --width <W> --manifest-file "C:\tmp\dnd-optimize-manifest.json"
+   ```
+6. **Parse JSON stdout.** Dùng `final_filename`/`final_path` THỰC TẾ trong output (không dùng slug dự đoán ban đầu) để điền bảng ảnh. `ok:false` → báo lỗi setup, không xử lý ảnh tiếp (vẫn tiếp tục phần HTML/schema bình thường).
+7. **Báo tình trạng từng ảnh** (applied/fallback/failed) trong Output Format.
+
+---
+
 ## Output Format (chung, mỗi loại thêm bảng riêng — xem cuối `references/{type}.md`)
 
 ```markdown
@@ -134,6 +170,23 @@ Slug đã được tính ở BƯỚC 1 (ngay sau khi xác định keyword). Dùn
 | 1 | {lsi_keyword_1} | {alt_text_1} | {alt_slug_1} |
 
 ---
+```
+
+**Chỉ khi `images` là path** — thêm bảng sau (điền từ JSON output của `optimize_images.py`, dùng `final_filename` thực tế):
+
+```markdown
+## 🖼️ Ảnh đã xử lý
+
+| # | File nguồn | File output | Trạng thái | TinyPNG |
+|---|---|---|---|---|
+| 1 | {source_filename} | {final_filename} | success/fallback/failed | applied/skipped_no_key/skipped_error/disabled_quota |
+
+**Tổng kết:** total {n} · success {n} · fallback {n} · failed {n}
+
+---
+```
+
+```markdown
 
 ## 🔗 Internal Links đã chèn
 

@@ -58,6 +58,12 @@ Title (50-60 ký tự, chứa tên bác sĩ + chuyên khoa), Description (150-16
 
 ---
 
+## BƯỚC 4.4 — Xử lý ảnh thật (nếu `images` là path)
+
+Nếu tham số `images` là đường dẫn folder → thực hiện mục **"Common Procedure — Xử lý & tối ưu ảnh folder"** ở SKILL.md (đọc ảnh nguồn, hỏi width, ghi manifest, gọi `scripts/optimize_images.py`, dùng `final_filename` thực tế). Nếu `images` là số → bỏ qua, sang BƯỚC 4.5.
+
+---
+
 ## BƯỚC 4.5 — Schema.org: Physician
 
 Luôn sinh schema `Physician` cho loại bài này:
