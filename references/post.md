@@ -141,7 +141,20 @@ BS Võ Thị Hoàng Lan:  https://matquoctednd.vn/doctors/vo-thi-hoang-lan/
 
 ## BƯỚC 3.6 — Thêm Block "Tóm Tắt Bài Viết Bằng AI" (LUÔN CHÈN — không bị ảnh hưởng bởi `none-internal`)
 
-**Luôn luôn chèn block này vào ĐẦU toàn bộ nội dung thân bài** — ngay sau thẻ mở `<article>`, TRƯỚC đoạn mở bài, TRƯỚC internal links (BƯỚC 3), và TRƯỚC block bác sĩ tham vấn (BƯỚC 3.5). Áp dụng bất kể có flag `none-internal` hay không. JSON-LD script tag (xem BƯỚC 4.5) vẫn luôn là phần tử cuối cùng trước `</article>`, không liên quan đến vị trí block này.
+**Luôn luôn chèn block này ngay TRƯỚC thẻ `<h2>` đầu tiên** trong bài — sau các đoạn intro/`<p>` mở đầu, KHÔNG đặt ở trên cùng của `<article>`, cũng KHÔNG đặt ở cuối bài. Áp dụng bất kể có flag `none-internal` hay không. JSON-LD script tag (xem BƯỚC 4.5) vẫn luôn là phần tử cuối cùng trước `</article>`, không liên quan đến vị trí block này. Cấu trúc mong muốn:
+
+```
+<article>
+  <p>...đoạn mở đầu / intro...</p>
+  <!-- block dnd-ai-summary ở ĐÂY -->
+  <h2>...heading đầu tiên...</h2>
+  ...phần còn lại của bài...
+  <!-- block bác sĩ tham vấn (nếu có) ở cuối thân bài -->
+  <!-- JSON-LD script tag — luôn là phần tử cuối cùng trước </article> -->
+</article>
+```
+
+Nếu bài **không có `<h2>` nào** → chèn sau đoạn intro/`<p>` mở đầu (vẫn không đặt làm phần tử đầu tiên của `<article>` nếu đã có intro).
 
 **Lấy URL bài viết thật:** dùng slug đã tính ở BƯỚC 1 của SKILL.md → `https://matquoctednd.vn/{slug}/`
 
@@ -177,7 +190,7 @@ H%C3%A3y%20truy%20c%E1%BA%ADp%20https%3A%2F%2Fmatquoctednd.vn%2Fphau-thuat-mat-l
 
 **Rules:**
 - ✅ LUÔN chèn block này, kể cả khi có flag `none-internal` (khác với BƯỚC 3 và BƯỚC 3.5)
-- ✅ Chèn ngay đầu bài (phần tử đầu tiên trong `<article>`, trước cả đoạn mở bài) — KHÔNG đặt ở cuối bài
+- ✅ Chèn ngay TRƯỚC thẻ `<h2>` đầu tiên (sau đoạn intro) — KHÔNG đặt đầu `<article>`, KHÔNG đặt ở cuối bài
 - ✅ Cả 3 link dùng CÙNG một `{ENCODED_PROMPT}`, chỉ khác domain/endpoint
 - ✅ TOÀN BỘ style phải viết inline trực tiếp trên từng tag như template trên — KHÔNG tạo `<style>` tag hay CSS class riêng (CMS/editor thường strip `<style>` khi paste, làm mất hết layout)
 - ✅ Dùng `display:flex; flex-wrap:wrap` cho container nút, mỗi nút `flex:1 1 140px; min-height:44px` để tự xếp đều trên desktop và xếp chồng gọn trên mobile

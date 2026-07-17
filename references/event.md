@@ -60,7 +60,20 @@ Không cần chèn block "bác sĩ tham vấn" (BƯỚC 3.5 của post) — even
 
 ## BƯỚC 3.5 — Thêm Block "Tóm Tắt Bài Viết Bằng AI" (LUÔN CHÈN)
 
-**Luôn luôn chèn block này vào ĐẦU bài** — ngay sau thẻ mở `<article>`, TRƯỚC đoạn giới thiệu, info block, nội dung chi tiết, CTA đăng ký (BƯỚC 2), và internal links (BƯỚC 3). JSON-LD script tag (xem BƯỚC 4.5) vẫn luôn là phần tử cuối cùng trước `</article>`, không liên quan đến vị trí block này. (Event không có flag `none-internal` nên block này không cần điều kiện flag — luôn chạy.)
+**Luôn luôn chèn block này ngay TRƯỚC thẻ `<h2>` đầu tiên** trong bài — sau đoạn giới thiệu / info block (nếu info block nằm trước h2 đầu), KHÔNG đặt ở trên cùng của `<article>`, cũng KHÔNG đặt ở cuối bài. JSON-LD script tag (xem BƯỚC 4.5) vẫn luôn là phần tử cuối cùng trước `</article>`, không liên quan đến vị trí block này. (Event không có flag `none-internal` nên block này không cần điều kiện flag — luôn chạy.) Cấu trúc mong muốn:
+
+```
+<article>
+  <p>...đoạn giới thiệu...</p>
+  <!-- info block nếu có và nằm trước h2 -->
+  <!-- block dnd-ai-summary ở ĐÂY -->
+  <h2>...heading đầu tiên...</h2>
+  ...phần còn lại (nội dung chi tiết, CTA đăng ký)...
+  <!-- JSON-LD script tag — luôn là phần tử cuối cùng trước </article> -->
+</article>
+```
+
+Nếu bài **không có `<h2>` nào** → chèn sau đoạn giới thiệu / info block (vẫn không đặt làm phần tử đầu tiên của `<article>` nếu đã có intro).
 
 **Lấy URL bài viết thật:** dùng slug đã tính ở BƯỚC 1 của SKILL.md → `https://matquoctednd.vn/{slug}/`
 
@@ -96,7 +109,7 @@ H%C3%A3y%20truy%20c%E1%BA%ADp%20https%3A%2F%2Fmatquoctednd.vn%2Fphau-thuat-mat-l
 
 **Rules:**
 - ✅ LUÔN chèn block này (event không có flag `none-internal`)
-- ✅ Chèn ngay đầu bài (phần tử đầu tiên trong `<article>`, trước cả đoạn giới thiệu) — KHÔNG đặt ở cuối bài
+- ✅ Chèn ngay TRƯỚC thẻ `<h2>` đầu tiên (sau đoạn giới thiệu / info block) — KHÔNG đặt đầu `<article>`, KHÔNG đặt ở cuối bài
 - ✅ Cả 3 link dùng CÙNG một `{ENCODED_PROMPT}`, chỉ khác domain/endpoint
 - ✅ Label riêng cho event: "Tóm tắt **sự kiện** này bằng AI" (khác post/doctor dùng "bài viết")
 - ✅ TOÀN BỘ style phải viết inline trực tiếp trên từng tag như template trên — KHÔNG tạo `<style>` tag hay CSS class riêng (CMS/editor thường strip `<style>` khi paste, làm mất hết layout)
