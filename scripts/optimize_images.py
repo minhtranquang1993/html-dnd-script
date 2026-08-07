@@ -7,7 +7,7 @@ Called by the dnd-html skill when the `images` parameter is a folder path
 
 Pipeline per image (source folder is never modified):
     1. resize to --width (aspect kept, never upscaled)
-    2. convert to --format (default webp)
+    2. convert to --format (default jpeg -- matquoctednd.vn serves no webp)
     3. compress via TinyPNG if an API key is available
     4. write metadata LAST -- TinyPNG strips it, so it must be re-applied after
 
@@ -275,9 +275,9 @@ def main():
     ap.add_argument("--manifest-file", required=True, help="JSON manifest path")
     ap.add_argument(
         "--format",
-        default="webp",
-        choices=["webp", "jpeg", "png"],
-        help="output format (default webp)",
+        default="jpeg",
+        choices=["jpeg", "webp", "png"],
+        help="output format (default jpeg -- matquoctednd.vn does not serve webp)",
     )
     ap.add_argument("--output-dir", help="where to write results (default <folder>/optimized)")
     ap.add_argument("--no-tinypng", action="store_true", help="skip TinyPNG compression")

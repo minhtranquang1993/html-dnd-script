@@ -139,7 +139,7 @@ Mục này CHỈ chạy khi tham số `images` là **path** (xem "Parse tham s�
    python3 "<SKILL_DIR>/scripts/optimize_images.py" --folder "<path folder>" --width <W> --manifest-file "<manifest path ở bước 4>"
    ```
 
-   Ảnh nguồn KHÔNG bị sửa — output ghi ra `<path folder>/optimized/` (đổi bằng `--output-dir`). Mặc định xuất **WebP**; thêm `--format jpeg` (hoặc `png`) nếu CMS không nhận WebP, `--no-tinypng` để bỏ bước nén.
+   Ảnh nguồn KHÔNG bị sửa — output ghi ra `<path folder>/optimized/` (đổi bằng `--output-dir`). Mặc định xuất **JPEG** vì matquoctednd.vn hiện không serve WebP (thư viện uploads toàn `.jpg`/`.png`, request `.webp` trả 404 và server không content-negotiate). Thêm `--format webp` nếu sau này site bật WebP, `--no-tinypng` để bỏ bước nén.
 
    > **Yêu cầu:** script cần `Pillow` + `piexif`. Nếu interpreter đang chạy thiếu 2 package này, script tự re-exec sang một Python khác có sẵn chúng; không tìm được thì trả `ok:false` kèm `hint` cách cài. TinyPNG chỉ chạy khi có API key ở `TINYPNG_API_KEY` (env) hoặc `credentials/tinypng_api_key.txt` — không có key thì bỏ qua, ảnh vẫn được resize/convert bình thường.
 6. **Parse JSON stdout.** Dùng `final_filename`/`final_path` THỰC TẾ trong output (không dùng slug dự đoán ban đầu) để điền bảng ảnh — trùng tên sẽ bị thêm hậu tố `-2`, `-3`. `ok:false` → báo lỗi setup, không xử lý ảnh tiếp (vẫn tiếp tục phần HTML/schema bình thường).
