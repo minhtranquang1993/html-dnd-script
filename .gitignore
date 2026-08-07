@@ -1,6 +1,7 @@
 # Credentials — NEVER commit real tokens
 credentials/github_token.txt
 credentials/token_config.json
+credentials/tinypng_api_key.txt
 
 # Python cache
 __pycache__/

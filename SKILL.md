@@ -124,7 +124,7 @@ Mục này CHỈ chạy khi tham số `images` là **path** (xem "Parse tham s�
 1. **Chỉ chạy khi path.** Số → bỏ qua, giữ hành vi LSI keyword cũ.
 2. **Đọc folder, liệt kê ảnh nguồn** — sort theo alphabet ASCII bằng `sorted()`. Số ảnh = N. LSI keyword ở BƯỚC 4 sinh đúng N item, map 1-1 theo thứ tự alphabet.
 3. **Hỏi user:** "Width bao nhiêu px? (mặc định 1200)". User không nêu → dùng 1200.
-4. **Ghi manifest JSON tạm** `C:\tmp\dnd-optimize-manifest.json` (tạo `C:\tmp` nếu chưa có). Manifest là JSON array, mỗi item:
+4. **Ghi manifest JSON tạm** vào thư mục temp của hệ điều hành — macOS/Linux: `/tmp/dnd-optimize-manifest.json`, Windows: `%TEMP%\dnd-optimize-manifest.json` (tạo thư mục nếu chưa có). Manifest là JSON array, mỗi item:
 
    ```json
    { "source_filename": "IMG_0012.PNG", "alt_text_slug": "rang-su-tham-my", "image_description": "Răng sứ thẩm mỹ tại phòng khám" }
@@ -133,13 +133,17 @@ Mục này CHỈ chạy khi tham số `images` là **path** (xem "Parse tham s�
    `source_filename` phải là tên file ĐÚNG như trên đĩa (không đoán lại theo slug).
 
    > **Metadata nhúng vào ảnh:** script tự ghi `image_description` vào cả EXIF Description lẫn field **Tags** (keyword, UTF-16 nên hiển thị đúng tiếng Việt trong Windows Properties), và field **Authors** = "Bệnh viện Mắt Quốc tế DND Sài Gòn" cho mọi ảnh. Metadata được ghi LẠI sau khi TinyPNG nén (TinyPNG strip metadata) nên luôn có mặt trong ảnh cuối — không cần khai báo gì thêm trong manifest.
-5. **Gọi script** (quote mọi path):
+5. **Gọi script** (quote mọi path — dùng `python3` trên macOS/Linux, `python` trên Windows):
 
    ```
-   python "<SKILL_DIR>/scripts/optimize_images.py" --folder "<path folder>" --width <W> --manifest-file "C:\tmp\dnd-optimize-manifest.json"
+   python3 "<SKILL_DIR>/scripts/optimize_images.py" --folder "<path folder>" --width <W> --manifest-file "<manifest path ở bước 4>"
    ```
-6. **Parse JSON stdout.** Dùng `final_filename`/`final_path` THỰC TẾ trong output (không dùng slug dự đoán ban đầu) để điền bảng ảnh. `ok:false` → báo lỗi setup, không xử lý ảnh tiếp (vẫn tiếp tục phần HTML/schema bình thường).
-7. **Báo tình trạng từng ảnh** (applied/fallback/failed) trong Output Format.
+
+   Ảnh nguồn KHÔNG bị sửa — output ghi ra `<path folder>/optimized/` (đổi bằng `--output-dir`). Mặc định xuất **WebP**; thêm `--format jpeg` (hoặc `png`) nếu CMS không nhận WebP, `--no-tinypng` để bỏ bước nén.
+
+   > **Yêu cầu:** script cần `Pillow` + `piexif`. Nếu interpreter đang chạy thiếu 2 package này, script tự re-exec sang một Python khác có sẵn chúng; không tìm được thì trả `ok:false` kèm `hint` cách cài. TinyPNG chỉ chạy khi có API key ở `TINYPNG_API_KEY` (env) hoặc `credentials/tinypng_api_key.txt` — không có key thì bỏ qua, ảnh vẫn được resize/convert bình thường.
+6. **Parse JSON stdout.** Dùng `final_filename`/`final_path` THỰC TẾ trong output (không dùng slug dự đoán ban đầu) để điền bảng ảnh — trùng tên sẽ bị thêm hậu tố `-2`, `-3`. `ok:false` → báo lỗi setup, không xử lý ảnh tiếp (vẫn tiếp tục phần HTML/schema bình thường).
+7. **Báo tình trạng từng ảnh** (success/fallback/failed) trong Output Format. `fallback` = ảnh vẫn dùng được nhưng có bước phụ lỗi (TinyPNG hoặc metadata) — đọc `notes` để biết lý do.
 
 ---
 
@@ -233,7 +237,7 @@ Sinh caption ngắn **6-12 từ**, bám sát chủ đề đoạn chứa video (d
 
 | # | File nguồn | File output | Trạng thái | TinyPNG |
 |---|---|---|---|---|
-| 1 | {source_filename} | {final_filename} | success/fallback/failed | applied/skipped_no_key/skipped_error/disabled_quota |
+| 1 | {source_filename} | {final_filename} | success/fallback/failed | applied/skipped_no_key/skipped_error/disabled_quota/disabled/not_reached |
 
 **Tổng kết:** total {n} · success {n} · fallback {n} · failed {n}
 
