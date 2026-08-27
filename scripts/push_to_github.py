@@ -18,11 +18,11 @@ import sys
 import tempfile
 from pathlib import Path
 
-# Add workspace root to path so we can import git_push_helper
+# Add skill root to path so we can import git_push_helper (it lives next to SKILL.md)
 _SCRIPT_DIR = Path(__file__).resolve().parent
-_WORKSPACE = _SCRIPT_DIR.parents[2]  # skills/dnd-html/scripts -> dnd-html -> skills -> workspace
-if str(_WORKSPACE) not in sys.path:
-    sys.path.insert(0, str(_WORKSPACE))
+_SKILL_ROOT = _SCRIPT_DIR.parent  # scripts/ -> dnd-html/
+if str(_SKILL_ROOT) not in sys.path:
+    sys.path.insert(0, str(_SKILL_ROOT))
 
 from git_push_helper import get_token_for_repo
 

@@ -43,6 +43,14 @@ import urllib.error
 import urllib.request
 from pathlib import Path
 
+# JSON output carries Vietnamese text; a cp1252 console (Windows default) would
+# raise UnicodeEncodeError on print. Force UTF-8 on both streams.
+for _stream in (sys.stdout, sys.stderr):
+    try:
+        _stream.reconfigure(encoding="utf-8")
+    except (AttributeError, ValueError):
+        pass
+
 AUTHOR = "Bệnh viện Mắt Quốc tế DND Sài Gòn"
 SOURCE_EXTS = {".jpg", ".jpeg", ".png", ".webp", ".tif", ".tiff", ".bmp", ".heic", ".heif"}
 TINY_ENDPOINT = "https://api.tinify.com/shrink"
