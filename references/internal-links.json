@@ -39,6 +39,9 @@
     { "url": "https://matquoctednd.vn/mo-can-smile-pro-phi-thong/", "title": "Mổ cận Smile Pro phi thoáng", "topics": ["khuc-xa"], "keywords": ["mổ cận smile pro"] },
     { "url": "https://matquoctednd.vn/phau-thuat-phaco-truyen-thong-va-femto-phaco/", "title": "Phẫu thuật Phaco truyền thống và Femto Phaco", "topics": ["phaco"], "keywords": ["phaco truyền thống", "femto phaco"] },
     { "url": "https://matquoctednd.vn/thuy-tinh-the-nhan-tao/", "title": "Thủy tinh thể nhân tạo", "topics": ["phaco"], "keywords": ["thủy tinh thể nhân tạo"] },
-    { "url": "https://matquoctednd.vn/bang-do-can-thi/", "title": "Bảng đo cận thị", "topics": ["khuc-xa"], "keywords": ["bảng đo cận thị"] }
+    { "url": "https://matquoctednd.vn/bang-do-can-thi/", "title": "Bảng đo cận thị", "topics": ["khuc-xa"], "keywords": ["bảng đo cận thị"] },
+    { "url": "https://matquoctednd.vn/lao-thi/", "title": "Lão thị", "topics": ["lao-thi"], "keywords": ["lão thị", "điều trị lão thị"] },
+    { "url": "https://matquoctednd.vn/su-khac-nhau-giua-vien-thi-va-lao-thi/", "title": "Sự khác nhau giữa viễn thị và lão thị", "topics": ["khuc-xa", "lao-thi"], "keywords": ["viễn thị", "lão thị", "phân biệt viễn thị lão thị"] },
+    { "url": "https://matquoctednd.vn/mo-can-thi-co-duoc-huong-bao-hiem-y-te-khong/", "title": "Mổ cận thị có được hưởng bảo hiểm y tế không", "topics": ["khuc-xa"], "keywords": ["mổ cận thị", "bảo hiểm y tế", "BHYT mổ cận"] }
   ]
 }
