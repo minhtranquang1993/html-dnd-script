@@ -17,8 +17,14 @@ Format bài viết thành HTML chuẩn SEO cho website **Bệnh viện Mắt Qu�
 ## Usage
 
 ```
-/dnd-html [post|event|doctor] [images=N] [none-internal]
+/dnd-html [post|event|doctor] [images=N] [none-internal] [update-sitemap]
 {nội dung paste trực tiếp, hoặc Google Docs URL}
+```
+
+Hoặc gọi độc lập để chỉ cập nhật danh sách bài viết kiến thức từ `post-sitemap.xml` vào `references/internal-links.json`:
+
+```
+/dnd-html update-sitemap
 ```
 
 Không cần khai báo `keyword=` hay `link="..."` — dán nội dung (hoặc dán URL Google Docs) ngay sau các flag, skill tự đọc và tự xác định từ khóa chính từ nội dung đó.
@@ -30,12 +36,17 @@ Không cần khai báo `keyword=` hay `link="..."` — dán nội dung (hoặc d
 | `{type}` | ❌ | tất cả | `post` / `event` / `doctor`. Không truyền hoặc không khớp → mặc định `post` |
 | `images` | ❌ | tất cả | 2 chế độ: **số N** → sinh N LSI image keywords text (mặc định = 3, hành vi cũ). **đường dẫn folder** → bật xử lý ảnh thật (resize/convert/optimize) theo mục "Common Procedure — Xử lý & tối ưu ảnh folder" |
 | `none-internal` | ❌ | post | Bỏ qua internal links (BƯỚC 3) và block bác sĩ tham vấn (BƯỚC 3.5). Không áp dụng cho event/doctor (2 loại này không có block bác sĩ tham vấn) |
-| nội dung | ✅ | tất cả | Toàn bộ phần còn lại của message: text paste trực tiếp, hoặc 1 Google Docs URL |
+| `update-sitemap` (hoặc `--update-sitemap`) | ❌ | post / standalone | Chạy `scripts/update_sitemap.py` để cào `https://matquoctednd.vn/post-sitemap.xml`, tự động lọc bài kiến thức mới và cập nhật vào `references/internal-links.json`. Có thể gọi độc lập (`/dnd-html update-sitemap`) hoặc kèm nội dung bài viết |
+| nội dung | ✅ (trừ khi chỉ gọi `update-sitemap`) | tất cả | Toàn bộ phần còn lại của message: text paste trực tiếp, hoặc 1 Google Docs URL |
 
 ### Ví dụ gọi
 
 ```
-/dnd-html post images=5
+/dnd-html update-sitemap
+```
+
+```
+/dnd-html post update-sitemap images=5
 Lasik là phương pháp phẫu thuật khúc xạ... (toàn bộ nội dung bài paste ở đây)
 ```
 
@@ -81,6 +92,17 @@ Xác định `images` là **count mode** (số N) hay **path mode** (folder ản
 3. Còn lại → count mode với default (`images=3`).
 
 Khuyến nghị: khi truyền folder nên dùng đường dẫn có `/` (tuyệt đối hoặc `./relative`) để không mơ hồ. Tương thích ngược 100% với `images=N`.
+
+### Parse tham số `update-sitemap` (hoặc `--update-sitemap`)
+
+Nếu có mặt `update-sitemap` hoặc `--update-sitemap` trong câu lệnh:
+1. Chạy script cập nhật danh sách internal links từ `https://matquoctednd.vn/post-sitemap.xml`:
+   ```
+   python "<SKILL_DIR>/scripts/update_sitemap.py"
+   ```
+2. Đọc JSON kết quả trả về (`added_count`, `total_articles`, `added_articles`).
+3. **Nếu user chỉ gọi `/dnd-html update-sitemap` (không kèm nội dung bài viết):** Báo cáo kết quả cập nhật (tổng số bài trong `internal-links.json`, số bài mới vừa thêm kèm tiêu đề + URL) và **DỪNG LẠI** (không chạy BƯỚC 1–5).
+4. **Nếu user gọi kèm nội dung bài viết (hoặc link Google Docs):** Sau khi cập nhật xong `references/internal-links.json`, tiếp tục chạy BƯỚC 1–5 như bình thường với danh sách internal links vừa được làm mới.
 
 ---
 
@@ -144,6 +166,33 @@ Mục này CHỈ chạy khi tham số `images` là **path** (xem "Parse tham s�
    > **Yêu cầu:** script cần `Pillow` + `piexif`. Nếu interpreter đang chạy thiếu 2 package này, script tự re-exec sang một Python khác có sẵn chúng; không tìm được thì trả `ok:false` kèm `hint` cách cài. TinyPNG chỉ chạy khi có API key ở `TINYPNG_API_KEY` (env) hoặc `credentials/tinypng_api_key.txt` — không có key thì bỏ qua, ảnh vẫn được resize/convert bình thường.
 6. **Parse JSON stdout.** Dùng `final_filename`/`final_path` THỰC TẾ trong output (không dùng slug dự đoán ban đầu) để điền bảng ảnh — trùng tên sẽ bị thêm hậu tố `-2`, `-3`. `ok:false` → báo lỗi setup, không xử lý ảnh tiếp (vẫn tiếp tục phần HTML/schema bình thường).
 7. **Báo tình trạng từng ảnh** (success/fallback/failed) trong Output Format. `fallback` = ảnh vẫn dùng được nhưng có bước phụ lỗi (TinyPNG hoặc metadata) — đọc `notes` để biết lý do.
+
+---
+
+## Common Procedure — Lên ý tưởng & Tạo ảnh Thumbnail bài viết Website (BẮT BUỘC tự động chạy cho `post`)
+
+> ⚠️ **BẮT BUỘC LUÔN CHẠY TỰ ĐỘNG cho loại bài `post`** (bài SEO kiến thức/hướng dẫn/giải đáp) — không cần đợi user nhắc. **KHÔNG áp dụng cho `event` và `doctor`**.
+
+Khi type = `post`, trong bước xử lý ảnh (BƯỚC 4.4) luôn tự động thực hiện lên ý tưởng và tạo ảnh thumbnail (ảnh đại diện) cho bài viết website `matquoctednd.vn`:
+
+### 1. Concept chuẩn ưu tiên (Tư vấn chuyên gia & Mô phỏng 3D Nhãn khoa — Layout 40/60)
+
+- **Tỷ lệ khung hình:** Ngang `16:9` (chuẩn `1200x675px`), chia bố cục **40/60**:
+  - **Bên phải (60%):** Hình ảnh bác sĩ nhãn khoa Việt Nam (áo blouse trắng / scrubs xanh y tế) đang thăm khám bằng sinh hiển vi (slit-lamp) hoặc tư vấn ân cần, tươi tắn cho bệnh nhân có độ tuổi khớp với chủ đề bài viết (ví dụ: người cao tuổi 60-65 tuổi với bài *cườm khô / đục thủy tinh thể / lão thị*; người trẻ với bài *mổ cận / tật khúc xạ*) trong không gian phòng khám hiện đại chuẩn quốc tế.
+  - **Bên trái (40%):** Hình minh họa 3D y khoa (3D anatomical eye cross-section) phát sáng sắc nét, mô tả trực quan cơ chế bệnh lý và giải pháp điều trị của bài (ví dụ: thủy tinh thể mờ đục do cườm khô chuyển sang kính nội nhãn IOL trong suốt) đặt trên nền gradient xanh navy – xanh cyan y tế (`#081c3a` → `#00a8e8`).
+- **Thông điệp thị giác:** Kết hợp trực quan giữa *Bệnh lý là gì* (mô hình 3D bên trái) và *Giải pháp thăm khám/điều trị uy tín tại DND Sài Gòn* (bác sĩ & bệnh nhân bên phải).
+
+### 2. Quy trình tạo ảnh & đóng chữ tiếng Việt (2 phiên bản)
+
+1. **Tạo ảnh gốc bằng AI (`image-generator`):**
+   - Trong prompt gửi `image-generator`, **BẮT BUỘC yêu cầu không chèn bất kỳ chữ/text hay watermark nào** vào ảnh (`Do NOT include any text or watermarks in the image`) để tránh lỗi vỡ dấu tiếng Việt.
+2. **Xuất 2 phiên bản chuẩn SEO (`width=1200px`, định dạng `.jpg`):**
+   - **Bản 1 — Ảnh sạch không chữ (`thumbnail-{slug}.jpg`):** Dùng khi giao diện CMS đã tự động đè tiêu đề lên ảnh đại diện.
+   - **Bản 2 — Ảnh có Typography tiếng Việt (`thumbnail-{slug}-co-chu.jpg`):** Dùng Python (`Pillow`) phủ lớp gradient tối nhẹ ở đáy ảnh và vẽ chữ tiếng Việt chuẩn dấu (font `Arial Bold` / `Montserrat Bold`):
+     - **Tiêu đề chính (chữ trắng in hoa, cỡ lớn) + Tiêu đề phụ (nằm trong pill highlight màu xanh `#00a8e8`)** ở góc dưới bên trái, kèm thanh dọc điểm nhấn màu cyan (`#00c8ff`).
+     - ❌ **KHÔNG chèn label/badge text `"BỆNH VIỆN MẮT QUỐC TẾ DND SÀI GÒN"`** lên ảnh.
+3. **Nhúng EXIF Metadata & Lưu file:**
+   - Lưu cả 2 file vào `<path folder>/optimized/` (nếu có folder ảnh bài viết) và nhúng đầy đủ EXIF metadata (`ImageDescription`, `XPKeywords`, `XPAuthor = "Bệnh viện Mắt Quốc tế DND Sài Gòn"`) bằng `piexif` giống như ảnh trong bài.
 
 ---
 
