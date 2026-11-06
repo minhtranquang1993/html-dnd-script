@@ -217,8 +217,8 @@ Dựa vào `keyword` chính và nội dung bài, tạo **N keywords** (N = tham 
 
 ## BƯỚC 4.4 — Xử lý ảnh thật (nếu images là path) & Tự động Tạo Thumbnail bài viết (BẮT BUỘC cho post)
 
-- **Xử lý folder ảnh bài viết:** Nếu tham số images là đường dẫn folder → thực hiện mục **"Common Procedure — Xử lý & tối ưu ảnh folder"** ở SKILL.md (đọc ảnh nguồn, hỏi width hoặc mặc định 1200, ghi manifest, gọi scripts/optimize_images.py, dùng inal_filename thực tế). Nếu images là số → bỏ qua phần xử lý folder ảnh.
-- **Tạo ảnh Thumbnail bài viết (LUÔN TỰ ĐỘNG CHẠY cho mọi bài post — không cần đợi user yêu cầu):** Thực hiện mục **"Common Procedure — Lên ý tưởng & Tạo ảnh Thumbnail bài viết Website (BẮT BUỘC tự động chạy cho post)"** ở SKILL.md (ưu tiên Concept 40/60: mô hình 3D nhãn khoa bên trái + bác sĩ DND tư vấn bệnh nhân bên phải; xuất cả bản không chữ 	humbnail-{slug}.jpg và bản đóng chữ tiếng Việt 	humbnail-{slug}-co-chu.jpg chuẩn 1200px kèm EXIF metadata vào thư mục <path folder>/optimized/ hoặc thư mục Downloads nếu không truyền folder).
+- **Xử lý folder ảnh bài viết:** Nếu tham số `images` là đường dẫn folder → thực hiện mục **"Common Procedure — Xử lý & tối ưu ảnh folder"** ở SKILL.md (đọc ảnh nguồn, hỏi width hoặc mặc định 1200, ghi manifest, gọi `scripts/optimize_images.py`, dùng `final_filename` thực tế). Nếu `images` là số → bỏ qua phần xử lý folder ảnh.
+- **Tạo ảnh Thumbnail bài viết (LUÔN TỰ ĐỘNG CHẠY cho mọi bài post — không cần đợi user yêu cầu):** Thực hiện mục **"Common Procedure — Lên ý tưởng & Tạo ảnh Thumbnail bài viết Website (BẮT BUỘC tự động chạy cho post)"** ở SKILL.md (ưu tiên Concept 40/60: mô hình 3D nhãn khoa bên trái + bác sĩ DND tư vấn bệnh nhân bên phải; xuất cả bản không chữ `thumbnail-{slug}.jpg` và bản đóng chữ tiếng Việt `thumbnail-{slug}-co-chu.jpg` chuẩn 1200px kèm EXIF metadata vào thư mục `<path folder>/optimized/` hoặc thư mục Downloads nếu không truyền folder).
 
 ---
 
